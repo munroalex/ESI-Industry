@@ -11,7 +11,7 @@ import requests
 from sqlalchemy import func
 
 from custom_exceptions import UnexpectedException
-from models import db, MarketOrder, MarketHistory
+from app.models import db, MarketOrder, MarketHistory
 
 # Configure logging to write to a file
 logging.basicConfig(

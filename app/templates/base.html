@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }} - Eve Industry</title>
+    {% else %}
+    <title>Eve Industry</title>
+    {% endif %}
+  </head>
+
+  <body>
+    <div>Eve Industry: <a href="/index">Home</a></div>
+        <hr>
+        {% block content %}{% endblock %}
+
+    </div>
+  </body>
