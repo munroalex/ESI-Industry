@@ -221,3 +221,10 @@ def calculate_daily_sales_volumes(type_id, region_id):
           " in region_id %s{region_id} (last 60 days): %s{avg_daily_volume_60}",
             type_id, region_id, avg_daily_volume_60)
     return None
+
+if __name__ == "__main__":
+    fetch_market_orders(region_id=10000002, type_ids=[1201, 1202])
+    fetch_market_history(region_id=10000002, type_ids=[1201, 1202])
+    calculate_daily_sales_volumes(type_id=1201, region_id=10000002)
+    calculate_daily_sales_volumes(type_id=1202, region_id=10000002)
+    logging.info("Data fetch and processing complete.")
