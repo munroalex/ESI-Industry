@@ -6,7 +6,7 @@ Welcome to the Eve Industry project! This project aims to provide tools and reso
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [To Do](#todo)
+- [ToDo](#todo)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
@@ -22,7 +22,7 @@ Eve Industry is a comprehensive toolkit designed to help users analyze and manag
 - User-friendly interface
 - Comprehensive documentation
 
-## To Do
+## ToDo
 
  - Compile list of all type_ids required for use case
  - Save historical market data for main trade hubs and local trade hubs for analysis
