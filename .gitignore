@@ -175,7 +175,7 @@ cython_debug/
 
 # Cache and Text files
 *.cache
-*.txt
+t2*.txt
 *.log
 /cache/
 
