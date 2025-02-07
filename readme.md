@@ -9,6 +9,7 @@ Welcome to the Eve Industry project! This project aims to provide tools and reso
 - [ToDo](#todo)
 - [Usage](#usage)
 - [Contributing](#contributing)
+- [Installation](#installation)
 - [License](#license)
 
 ## Introduction
@@ -40,6 +41,34 @@ The project is not currently in a useable state.
 ## Contributing
 
 Contributions and feedback would be welcome! Please reach out on Discord if you are interested @black.watch
+
+## Installation
+
+For development only.
+
+1. Clone the GitHub repository:
+    ```sh
+    git clone https://github.com/yourusername/eve-industry.git
+    cd eve-industry
+    ```
+
+2. Create and activate a virtual environment:
+    ```sh
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+
+3. Install the required dependencies:
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+4. Set up the database and run the application:
+    ```sh
+    python app.py
+    ```
+
+5. Open your web browser and navigate to `http://127.0.0.1:5000` to access the application.
 
 ## License
 
