@@ -40,7 +40,7 @@ The project is not currently in a useable state.
 
 ## Contributing
 
-Contributions and feedback would be welcome! Please reach out on Discord if you are interested @black.watch
+Contributions and feedback would be welcome! Please reach out on Discord if you are interested [@black.watch](https://discordapp.com/users/209276966468059142)
 
 ## Installation
 
@@ -48,7 +48,7 @@ For development only.
 
 1. Clone the GitHub repository:
     ```sh
-    git clone https://github.com/yourusername/eve-industry.git
+    git clone https://github.com/munroalex/eve-industry.git 
     cd eve-industry
     ```
 
