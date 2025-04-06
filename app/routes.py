@@ -46,7 +46,7 @@ def fetch_orders() -> str:
     for line in t2_materials:
         type_id = line.strip(",\n")
         id_list.append(type_id)
-    print(id_list)
+    #print(id_list)
     fetch_market_orders(region_id=10000002, type_ids=id_list)
 
     return redirect(url_for("home"))
@@ -65,7 +65,7 @@ def fetch_history() -> str:
     with open("t2_materials.txt", "r", encoding="utf-8") as f:
         t2_materials: list[str] = f.readlines()
     for line in t2_materials:
-        type_id: str = line.strip().split(", ")
+        type_id = line.strip(",\n")
         id_list.append(type_id)
     fetch_market_history(region_id=10000002, type_ids=id_list)
     for type_id in id_list:

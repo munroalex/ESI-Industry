@@ -61,14 +61,18 @@ for line in t2_ships:
 for item in ship_list:
     blueprint_details = get_blueprint_details(item)
     t2_ships_blueprints.append(blueprint_details)
+#print(t2_ships_blueprints)
+
 
 
 unique_material_ids = set()
 # Aggregate unique material IDs
 for ship in t2_ships_blueprints:
+    print(ship)
     for material in ship['materials']:
         material_id = material[0]  # material[0] is the materialTypeID
         unique_material_ids.add(material_id)
+    print(f"Material list: {unique_material_ids}")
 
 # Convert the set to a list (if needed)
 unique_material_ids = list(unique_material_ids)

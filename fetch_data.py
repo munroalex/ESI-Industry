@@ -24,28 +24,54 @@ logging.basicConfig(
 )
 
 # Cache to store the last fetch time for each region and type_id
-CACHE_FILE = "fetch_cache.pkl"
+ORDER_CACHE_FILE = "order_fetch_cache.pkl"
+HISTORY_CACHE_FILE = "history_fetch_cache.pkl"
 
-def load_cache():
+def order_load_cache(ORDER_CACHE_FILE):
     """Load the fetch cache from disk."""
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "rb") as f:
+    if os.path.exists(ORDER_CACHE_FILE):
+        with open(ORDER_CACHE_FILE, "rb") as f:
             return pickle.load(f)
     return {}
 
-def save_cache(cache):
+def order_save_cache(cache):
     """Save the fetch cache to disk."""
-    with open(CACHE_FILE, "wb") as f:
+    with open(ORDER_CACHE_FILE, "wb") as f:
         pickle.dump(cache, f)
 
-fetch_cache = load_cache()
+def history_load_cache(HISTORY_CACHE_FILE):
+    """Load the fetch cache from disk."""
+    if os.path.exists(HISTORY_CACHE_FILE):
+        with open(HISTORY_CACHE_FILE, "rb") as f:
+            return pickle.load(f)
+    return {}
 
-def should_fetch(region_id, type_id, current_time):
+def history_save_cache(cache):
+    """Save the fetch cache to disk."""
+    with open(HISTORY_CACHE_FILE, "wb") as f:
+        pickle.dump(cache, f)
+
+
+
+def should_fetch_order(region_id, type_id, current_time):
     """Check if we should fetch new data based on the last fetch time."""
+    fetch_cache = order_load_cache(ORDER_CACHE_FILE)
     cache_key = (region_id, type_id)
     if cache_key in fetch_cache:
         last_fetch_time = fetch_cache[cache_key]
         if (current_time - last_fetch_time).total_seconds() < 300:
+            logging.info("Skipping fetch for region_id:"
+                         " %s and type_id: %s due to cache.", region_id, type_id)
+            return False
+    return True
+
+def should_fetch_history(region_id, type_id, current_time):
+    """Check if we should fetch new data based on the last fetch time."""
+    fetch_cache = history_load_cache(HISTORY_CACHE_FILE)
+    cache_key = (region_id, type_id)
+    if cache_key in fetch_cache:
+        last_fetch_time = fetch_cache[cache_key]
+        if (current_time - last_fetch_time).total_seconds() < 86400:
             logging.info("Skipping fetch for region_id:"
                          " %s and type_id: %s due to cache.", region_id, type_id)
             return False
@@ -116,16 +142,17 @@ def fetch_market_orders(region_id, type_ids):
     :param region_id: The region ID (e.g., 10000002 for Jita).
     :param type_ids: A list of type IDs (e.g., [1201, 1202] for Kestrel and Condor).
     """
+    fetch_cache = order_load_cache(ORDER_CACHE_FILE)
     current_time = datetime.now()
     for type_id in type_ids:
-        if not should_fetch(region_id, type_id, current_time):
+        if not should_fetch_order(region_id, type_id, current_time):
             continue
 
         try:
             orders = fetch_orders_from_api(region_id, type_id)
             process_orders(region_id, orders)
             fetch_cache[(region_id, type_id)] = current_time
-            save_cache(fetch_cache)
+            order_save_cache(fetch_cache)
             logging.info("Fetched and stored %s orders for type_id: %s in region_id: %s.",
                          len(orders), type_id, region_id)
         except requests.exceptions.RequestException as e:
@@ -141,7 +168,11 @@ def fetch_market_history(region_id, type_ids):
     :param region_id: The region ID (e.g., 10000002 for Jita).
     :param type_ids: A list of type IDs (e.g., [1201, 1202] for Kestrel and Condor).
     """
+    fetch_cache = history_load_cache(HISTORY_CACHE_FILE)
+    current_time = datetime.now()
     for type_id in type_ids:
+        if not should_fetch_history(region_id, type_id, current_time):
+            continue
         try:
             # Fetch historical data from the ESI API
             url = f"https://esi.evetech.net/latest/markets/{region_id}/history/"
@@ -173,6 +204,9 @@ def fetch_market_history(region_id, type_ids):
                         )
                         db.session.add(new_entry)
                 db.session.commit()
+                fetch_cache[(region_id, type_id)] = current_time
+                history_save_cache(fetch_cache)
+
                 logging.info("Fetched and stored historical data for type_id: %s in region_id: %s.",
                              type_id, region_id)
             else:
@@ -191,7 +225,7 @@ def calculate_daily_sales_volumes(type_id, region_id):
     :return: A dictionary with the 30-day and 60-day average daily volumes.
     """
     # Get the current date
-    today = datetime.now.date()
+    today = datetime.now()
 
     # Calculate the start dates for the last 30 and 60 days
     start_date_30 = today - timedelta(days=30)
@@ -214,11 +248,11 @@ def calculate_daily_sales_volumes(type_id, region_id):
     avg_daily_volume_30 = volumes_30 / 30
     avg_daily_volume_60 = volumes_60 / 60
 
-    logging.info("Average daily volume for type_id %s{type_id}"
-                 " in region_id %s{region_id} (last 30 days): %s{avg_daily_volume_30}",
+    logging.info("Average daily volume for type_id %s"
+                 " in region_id %s (last 30 days): %s",
                  type_id, region_id, avg_daily_volume_30)
-    logging.info("Average daily volume for type_id %s{type_id}"
-          " in region_id %s{region_id} (last 60 days): %s{avg_daily_volume_60}",
+    logging.info("Average daily volume for type_id %s"
+          " in region_id %s (last 60 days): %s",
             type_id, region_id, avg_daily_volume_60)
     return None
 
